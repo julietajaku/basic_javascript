@@ -1,37 +1,12 @@
-var url = require('url');
-var fs = require('fs');
 
-function renderHTML(path,response){
-	fs.readFile(path, null, function(error, data){
-		if(error){
-			response.writeHead(400);
-			response.write('File not found.');
-		} else {
-			response.write(data);
-		}
-		response.end();
-	});
+var http = require('http');
+var module1 = require('./module1')
+
+function onRequest(request, response){
+	response.writeHead(200, {'contentType': 'text/html'});
+	response.write(module1.myString);
+	module1.myFunction();
+	response.end();
 }
 
-module.exports = {
-	handleRequest: function handleRequest(request, response){
-		response.writeHead(200, {'contentType': 'text/html'});
-
-		var path = url.parse(request.url).pathname;
-		switch(path){
-
-			case '/':
-				renderHTML('./index.html', response);
-				break;
-			case '/login':
-				renderHTML('./login.html', response);
-				break;
-			default:
-				response.writeHead(404);
-				response.write('Route not defined');
-				response.end();
-		}
-
-	}
-
-};
+http.createServer(onRequest).listen(8000);
